@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CircuLab - Digital Circuit Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        #app {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Landing Page */
+        #landing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+
+        #landing h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            letter-spacing: 0.3rem;
+        }
+
+        #landing p {
+            font-size: 1.3rem;
+            color: #a0a0a0;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .landing-buttons {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .landing-btn {
+            padding: 1.2rem 2.5rem;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+        }
+
+        .btn-primary {
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+
+        .btn-primary:hover {
+            background: #00d9ff;
+            color: #0a0a0a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-secondary {
+            border-color: #39ff14;
+            color: #39ff14;
+        }
+
+        .btn-secondary:hover {
+            background: #39ff14;
+            color: #0a0a0a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(57, 255, 20, 0.3);
+        }
+
+        /* Saved Projects Gallery */
+        #projects-gallery {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            background: #0a0a0a;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .gallery-header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 3rem;
+            color: #00d9ff;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: 2px solid #00d9ff;
+            color: #00d9ff;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #00d9ff;
+            color: #0a0a0a;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: #1a1a1a;
+            border: 2px solid #2a2a2a;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .project-card:hover::before {
+            left: 100%;
+        }
+
+        .project-card:hover {
+            border-color: #00d9ff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.2);
+        }
+
+        .project-card h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            color: #39ff14;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-card p {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Main Workspace */
+        #workspace {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: #1a1a1a;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #2a2a2a;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d9ff;
+            letter-spacing: 0.2rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .header-btn {
+            padding: 0.6rem 1.2rem;
+            background: #2a2a2a;
+            color: #e0e0e0;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .header-btn:hover {
+            background: #3a3a3a;
+            color: #00d9ff;
+        }
+
+        .header-btn.maximize {
+            background: #00d9ff;
+            color: #0a0a0a;
+            font-weight: 600;
+        }
+
+        .header-btn.maximize:hover {
+            background: #00b8d9;
+        }
+
+        /* Main Layout */
+        #main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Left Sidebar */
+        #sidebar {
+            width: 280px;
+            background: #1a1a1a;
+            border-right: 2px solid #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll !important;
+            overflow-x: hidden;
+            transition: margin-left 0.3s ease;
+            position: relative;
+            height: calc(100vh - 60px);
+            scrollbar-width: thin;
+            scrollbar-color: #00d9ff #0a0a0a;
+        }
+
+        #sidebar::-webkit-scrollbar {
+            width: 14px !important;
+            display: block !important;
+            background: #0a0a0a;
+        }
+
+        #sidebar::-webkit-scrollbar-track {
+            background: #0a0a0a !important;
+            border-left: 2px solid #00d9ff;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00d9ff 0%, #00b8d9 100%) !important;
+            border-radius: 10px;
+            border: 3px solid #0a0a0a;
+            min-height: 50px;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00ffff 0%, #00d9ff 100%) !important;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.8);
+        }
+
+        #sidebar::-webkit-scrollbar-thumb:active {
+            background: #39ff14 !important;
+        }
+
+        #sidebar.collapsed {
+            margin-left: -280px;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 10px;
+            right: -35px;
+            width: 35px;
+            height: 50px;
+            background: #00d9ff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0a0a;
+            font-size: 1.4rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            z-index: 100;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 2px 0 8px rgba(0, 217, 255, 0.5);
+        }
+
+        .sidebar-toggle:hover {
+            background: #00b8d9;
+            width: 40px;
+        }
+
+        #sidebar.collapsed .sidebar-toggle {
+            right: -315px;
+        }
+
+        .sidebar-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .sidebar-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.9rem;
+            color: #00d9ff;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+
+        .component-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .component-item {
+            padding: 1rem;
+            background: #d3d3d3;
+            border: 2px solid #2a2a2a;
+            cursor: grab;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            color: #2a2a2a;
+            user-select: none;
+        }
+
+        .component-item:hover {
+            background: #e8e8e8;
+            border-color: #00d9ff;
+            box-shadow: 0 2px 8px rgba(0, 217, 255, 0.3);
+            transform: translateX(3px);
+        }
+
+        .component-item:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .component-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Canvas Area */
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #000000;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
+
+        /* Right Panel */
+        #right-panel {
+            width: 350px;
+            background: #1a1a1a;
+            border-left: 2px solid #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll !important;
+            overflow-x: hidden;
+            transition: margin-right 0.3s ease;
+            position: relative;
+            height: calc(100vh - 60px);
+            scrollbar-width: thin;
+            scrollbar-color: #39ff14 #0a0a0a;
+        }
+
+        #right-panel::-webkit-scrollbar {
+            width: 14px !important;
+            display: block !important;
+            background: #0a0a0a;
+        }
+
+        #right-panel::-webkit-scrollbar-track {
+            background: #0a0a0a !important;
+            border-right: 2px solid #39ff14;
+        }
+
+        #right-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #39ff14 0%, #2dd910 100%) !important;
+            border-radius: 10px;
+            border: 3px solid #0a0a0a;
+            min-height: 50px;
+        }
+
+        #right-panel::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #50ff30 0%, #39ff14 100%) !important;
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.8);
+        }
+
+        #right-panel::-webkit-scrollbar-thumb:active {
+            background: #00d9ff !important;
+        }
+
+        #right-panel.collapsed {
+            margin-right: -350px;
+        }
+
+        .panel-toggle {
+            position: absolute;
+            top: 10px;
+            left: -35px;
+            width: 35px;
+            height: 50px;
+            background: #39ff14;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0a0a;
+            font-size: 1.4rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            z-index: 100;
+            border-radius: 8px 0 0 8px;
+            box-shadow: -2px 0 8px rgba(57, 255, 20, 0.5);
+        }
+
+        .panel-toggle:hover {
+            background: #2dd910;
+            width: 40px;
+        }
+
+        #right-panel.collapsed .panel-toggle {
+            left: -385px;
+        }
+
+        .panel-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #2a2a2a;
+            flex-shrink: 0;
+        }
+
+        .panel-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.9rem;
+            color: #39ff14;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 90px;
+            background: #2a2a2a;
+            border: 2px solid #3a3a3a;
+            color: #e0e0e0;
+            padding: 0.9rem;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #00d9ff;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-top: 0.8rem;
+        }
+
+        .suggestion-item {
+            padding: 0.7rem;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            color: #a0a0a0;
+        }
+
+        .suggestion-item:hover {
+            background: #3a3a3a;
+            border-color: #00d9ff;
+            color: #00d9ff;
+            transform: translateX(3px);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #00d9ff;
+            color: #0a0a0a;
+            border: none;
+            cursor: pointer;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: all 0.2s;
+            letter-spacing: 0.05rem;
+        }
+
+        .action-btn:hover {
+            background: #00b8d9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: #39ff14;
+        }
+
+        .action-btn.secondary:hover {
+            background: #2dd910;
+            box-shadow: 0 4px 12px rgba(57, 255, 20, 0.4);
+        }
+
+        .action-btn.tertiary {
+            background: #666;
+            color: #fff;
+        }
+
+        .action-btn.tertiary:hover {
+            background: #777;
+            box-shadow: 0 4px 12px rgba(102, 102, 102, 0.4);
+        }
+
+        #truth-table-container {
+            margin-top: 1.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        #truth-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        #truth-table th,
+        #truth-table td {
+            padding: 0.7rem 0.5rem;
+            border: 1px solid #3a3a3a;
+            text-align: center;
+        }
+
+        #truth-table th {
+            background: #2a2a2a;
+            color: #00d9ff;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        #truth-table td {
+            background: #1a1a1a;
+        }
+
+        #truth-table tr:hover td {
+            background: #252525;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-btn {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            background: #d3d3d3;
+            color: #2a2a2a;
+            border: 2px solid #3a3a3a;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: #e8e8e8;
+            border-color: #00d9ff;
+        }
+
+        .tool-btn.active {
+            background: #00d9ff;
+            color: #0a0a0a;
+            border-color: #00d9ff;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Fullscreen Mode */
+        body.fullscreen #sidebar,
+        body.fullscreen #right-panel {
+            display: none;
+        }
+
+        body.fullscreen .header-btn.maximize {
+            background: #39ff14;
+        }
+
+        /* Scrollbar Styling */
+        #sidebar::-webkit-scrollbar,
+        #right-panel::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #sidebar::-webkit-scrollbar-track,
+        #right-panel::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb,
+        #right-panel::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 5px;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb:hover,
+        #right-panel::-webkit-scrollbar-thumb:hover {
+            background: #00d9ff;
+        }
+
+        #truth-table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        #truth-table-container::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        #truth-table-container::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 4px;
+        }
+
+        #truth-table-container::-webkit-scrollbar-thumb:hover {
+            background: #00d9ff;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00d9ff;
+        }
+
+        /* Force scrollbar visibility */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #00d9ff #1a1a1a;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            #landing h1 {
+                font-size: 3rem;
+            }
+
+            #sidebar {
+                width: 220px;
+            }
+
+            #right-panel {
+                width: 280px;
+            }
+
+            .landing-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Landing Page -->
+        <div id="landing">
+            <h1>CIRCULAB</h1>
+            <p>Interactive Digital Circuit Simulator with AI-Powered Generation</p>
+            <div class="landing-buttons">
+                <button class="landing-btn btn-primary" onclick="startNewProject()">START NEW PROJECT</button>
+                <button class="landing-btn btn-secondary" onclick="showProjects()">VIEW SAVED PROJECTS</button>
+            </div>
+        </div>
+
+        <!-- Saved Projects Gallery -->
+        <div id="projects-gallery">
+            <div class="gallery-header">
+                <h1>SAVED PROJECTS</h1>
+                <button class="back-btn" onclick="backToLanding()">← BACK TO HOME</button>
+            </div>
+            <div class="projects-grid">
+                <div class="project-card" onclick="loadProject('halfAdder')">
+                    <h3>Half Adder</h3>
+                    <p>Basic 1-bit adder circuit using XOR and AND gates</p>
+                    <div class="project-meta">
+                        <span>2 Inputs, 2 Outputs</span>
+                        <span>4 Components</span>
+                    </div>
+                </div>
+                <div class="project-card" onclick="loadProject('fullAdder')">
+                    <h3>Full Adder</h3>
+                    <p>Complete 1-bit adder with carry input and output</p>
+                    <div class="project-meta">
+                        <span>3 Inputs, 2 Outputs</span>
+                        <span>9 Components</span>
+                    </div>
+                </div>
+                <div class="project-card" onclick="loadProject('multiplexer')">
+                    <h3>2-to-1 Multiplexer</h3>
+                    <p>Data selector with single control line</p>
+                    <div class="project-meta">
+                        <span>3 Inputs, 1 Output</span>
+                        <span>8 Components</span>
+                    </div>
+                </div>
+                <div class="project-card" onclick="loadProject('srLatch')">
+                    <h3>SR Latch</h3>
+                    <p>Set-Reset memory element using cross-coupled NOR gates</p>
+                    <div class="project-meta">
+                        <span>2 Inputs, 2 Outputs</span>
+                        <span>6 Components</span>
+                    </div>
+                </div>
+                <div class="project-card" onclick="loadProject('decoder')">
+                    <h3>2-to-4 Decoder</h3>
+                    <p>Binary decoder with 2 inputs and 4 outputs</p>
+                    <div class="project-meta">
+                        <span>2 Inputs, 4 Outputs</span>
+                        <span>10 Components</span>
+                    </div>
+                </div>
+                <div class="project-card" onclick="loadProject('xorGate')">
+                    <h3>XOR Gate Demo</h3>
+                    <p>Simple demonstration of XOR logic operation</p>
+                    <div class="project-meta">
+                        <span>2 Inputs, 1 Output</span>
+                        <span>3 Components</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div id="workspace">
+            <header>
+                <div class="logo">CIRCULAB</div>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="undo()">↶ Undo</button>
+                    <button class="header-btn" onclick="redo()">↷ Redo</button>
+                    <button class="header-btn" onclick="clearCanvas()">Clear All</button>
+                    <button class="header-btn maximize" onclick="toggleFullscreen()">⛶ Maximize Canvas</button>
+                    <button class="header-btn" onclick="backToHome()">← Home</button>
+                </div>
+            </header>
+
+            <div id="main">
+                <!-- Left Sidebar -->
+                <div id="sidebar">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+                    <div class="sidebar-section">
+                        <div class="sidebar-title">Tools</div>
+                        <div class="toolbar">
+                        <div class="toolbar">
+                            <button class="tool-btn active" id="select-tool" onclick="setTool('select')">Select</button>
+                            <button class="tool-btn" id="wire-tool" onclick="setTool('wire')">Wire</button>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="sidebar-title">
+                            Components
+                            <button class="section-collapse-btn" onclick="toggleSection('components')">−</button>
+                        </div>
+                        <div id="components-content" class="section-content">
+                        <div class="component-list">
+                            <div class="component-item" draggable="true" data-type="INPUT">
+                                <span class="component-icon">🔘</span>
+                                <span>INPUT</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="OUTPUT">
+                                <span class="component-icon">💡</span>
+                                <span>OUTPUT</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="AND">
+                                <span class="component-icon">⋀</span>
+                                <span>AND Gate</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="OR">
+                                <span class="component-icon">⋁</span>
+                                <span>OR Gate</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="NOT">
+                                <span class="component-icon">¬</span>
+                                <span>NOT Gate</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="NAND">
+                                <span class="component-icon">⊼</span>
+                                <span>NAND Gate</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="NOR">
+                                <span class="component-icon">⊽</span>
+                                <span>NOR Gate</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="XOR">
+                                <span class="component-icon">⊕</span>
+                                <span>XOR Gate</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="XNOR">
+                                <span class="component-icon">⊙</span>
+                                <span>XNOR Gate</span>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas -->
+                <div id="canvas-container">
+                    <canvas id="canvas"></canvas>
+                </div>
+
+                <!-- Right Panel -->
+                <div id="right-panel">
+                    <button class="panel-toggle" onclick="togglePanel()">▶</button>
+                    <div class="panel-section">
+                        <div class="panel-title">
+                            AI Circuit Generator
+                            <button class="section-collapse-btn" onclick="toggleSection('ai-generator')">−</button>
+                        </div>
+                        <div id="ai-generator-content" class="section-content">
+                        <textarea id="ai-prompt" placeholder="Describe your circuit (e.g., 'Design a half adder')"></textarea>
+                        <div class="suggestions">
+                            <div class="suggestion-item" onclick="setPrompt('Design a half adder')">Design a half adder</div>
+                            <div class="suggestion-item" onclick="setPrompt('Create a full adder')">Create a full adder</div>
+                            <div class="suggestion-item" onclick="setPrompt('Build a 2-to-1 multiplexer')">Build a 2-to-1 multiplexer</div>
+                            <div class="suggestion-item" onclick="setPrompt('Make an SR latch')">Make an SR latch</div>
+                        </div>
+                        <button class="action-btn" onclick="generateCircuit()">GENERATE</button>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <div class="panel-title">
+                            Analysis
+                            <button class="section-collapse-btn" onclick="toggleSection('analysis')">−</button>
+                        </div>
+                        <div id="analysis-content" class="section-content">
+                        <button class="action-btn secondary" onclick="analyzeCircuit()">RUN / ANALYZE</button>
+                        <button class="action-btn tertiary" onclick="optimizeCircuit()">OPTIMIZE CIRCUIT</button>
+                        <button class="action-btn tertiary" onclick="exportCircuit()">EXPORT LOGICAL CIRCUIT</button>
+                        
+                        <div id="truth-table-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        const GRID_SIZE = 20;
+        let canvas, ctx;
+        let components = [];
+        let wires = [];
+        let selectedObject = null;
+        let currentTool = 'select';
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        let wireStart = null;
+        let tempWire = null;
+        let history = [];
+        let historyIndex = -1;
+        let nextId = 1;
+
+        // Component Class
+        class Component {
+            constructor(type, x, y) {
+                this.id = nextId++;
+                this.type = type;
+                this.x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+                this.y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+                this.width = 80;
+                this.height = 60;
+                this.inputs = this.getInputCount();
+                this.outputs = 1;
+                this.inputValues = new Array(this.inputs).fill(0);
+                this.outputValue = 0;
+                this.state = type === 'INPUT' ? 0 : null;
+            }
+
+            getInputCount() {
+                switch(this.type) {
+                    case 'INPUT': return 0;
+                    case 'OUTPUT': return 1;
+                    case 'NOT': return 1;
+                    default: return 2;
+                }
+            }
+
+            getInputPins() {
+                const pins = [];
+                const spacing = this.height / (this.inputs + 1);
+                for (let i = 0; i < this.inputs; i++) {
+                    pins.push({
+                        x: this.x,
+                        y: this.y + spacing * (i + 1)
+                    });
+                }
+                return pins;
+            }
+
+            getOutputPins() {
+                return [{
+                    x: this.x + this.width,
+                    y: this.y + this.height / 2
+                }];
+            }
+
+            contains(x, y) {
+                return x >= this.x && x <= this.x + this.width &&
+                       y >= this.y && y <= this.y + this.height;
+            }
+
+            evaluate() {
+                switch(this.type) {
+                    case 'INPUT':
+                        this.outputValue = this.state;
+                        break;
+                    case 'OUTPUT':
+                        this.outputValue = this.inputValues[0];
+                        break;
+                    case 'AND':
+                        this.outputValue = this.inputValues.every(v => v === 1) ? 1 : 0;
+                        break;
+                    case 'OR':
+                        this.outputValue = this.inputValues.some(v => v === 1) ? 1 : 0;
+                        break;
+                    case 'NOT':
+                        this.outputValue = this.inputValues[0] === 1 ? 0 : 1;
+                        break;
+                    case 'NAND':
+                        this.outputValue = this.inputValues.every(v => v === 1) ? 0 : 1;
+                        break;
+                    case 'NOR':
+                        this.outputValue = this.inputValues.some(v => v === 1) ? 0 : 1;
+                        break;
+                    case 'XOR':
+                        this.outputValue = this.inputValues.filter(v => v === 1).length % 2;
+                        break;
+                    case 'XNOR':
+                        this.outputValue = this.inputValues.filter(v => v === 1).length % 2 === 0 ? 1 : 0;
+                        break;
+                }
+            }
+
+            draw(ctx, isSelected) {
+                if (isSelected) {
+                    ctx.strokeStyle = '#00d9ff';
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(this.x - 2, this.y - 2, this.width + 4, this.height + 4);
+                }
+
+                ctx.fillStyle = '#2a2a2a';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.strokeStyle = '#00d9ff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+                ctx.fillStyle = '#e0e0e0';
+                ctx.font = 'bold 12px Roboto';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.type, this.x + this.width / 2, this.y + this.height / 2);
+
+                const inputPins = this.getInputPins();
+                inputPins.forEach(pin => {
+                    ctx.fillStyle = '#39ff14';
+                    ctx.beginPath();
+                    ctx.arc(pin.x, pin.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                const outputPins = this.getOutputPins();
+                outputPins.forEach(pin => {
+                    ctx.fillStyle = '#ff3939';
+                    ctx.beginPath();
+                    ctx.arc(pin.x, pin.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                if (this.type === 'INPUT') {
+                    ctx.fillStyle = this.state === 1 ? '#39ff14' : '#666';
+                    ctx.font = 'bold 20px Roboto';
+                    ctx.fillText(this.state, this.x + this.width / 2, this.y + this.height / 2 + 15);
+                }
+
+                if (this.type === 'OUTPUT') {
+                    ctx.fillStyle = this.outputValue === 1 ? '#39ff14' : '#666';
+                    ctx.font = 'bold 20px Roboto';
+                    ctx.fillText(this.outputValue, this.x + this.width / 2, this.y + this.height / 2 + 15);
+                }
+            }
+        }
+
+        class Wire {
+            constructor(fromComp, fromPin, toComp, toPin) {
+                this.id = nextId++;
+                this.from = { comp: fromComp, pin: fromPin };
+                this.to = { comp: toComp, pin: toPin };
+                this.value = 0;
+                this.points = this.calculatePoints();
+            }
+
+            calculatePoints() {
+                const start = this.from.comp.getOutputPins()[this.from.pin];
+                const end = this.to.comp.getInputPins()[this.to.pin];
+                
+                const points = [start];
+                const midX = (start.x + end.x) / 2;
+                
+                points.push({ x: midX, y: start.y });
+                points.push({ x: midX, y: end.y });
+                points.push(end);
+                
+                return points;
+            }
+
+            contains(x, y, threshold = 5) {
+                for (let i = 0; i < this.points.length - 1; i++) {
+                    const p1 = this.points[i];
+                    const p2 = this.points[i + 1];
+                    
+                    const dist = this.pointToSegmentDistance(x, y, p1.x, p1.y, p2.x, p2.y);
+                    if (dist < threshold) return true;
+                }
+                return false;
+            }
+
+            pointToSegmentDistance(px, py, x1, y1, x2, y2) {
+                const A = px - x1;
+                const B = py - y1;
+                const C = x2 - x1;
+                const D = y2 - y1;
+                
+                const dot = A * C + B * D;
+                const lenSq = C * C + D * D;
+                let param = -1;
+                
+                if (lenSq !== 0) param = dot / lenSq;
+                
+                let xx, yy;
+                
+                if (param < 0) {
+                    xx = x1;
+                    yy = y1;
+                } else if (param > 1) {
+                    xx = x2;
+                    yy = y2;
+                } else {
+                    xx = x1 + param * C;
+                    yy = y1 + param * D;
+                }
+                
+                const dx = px - xx;
+                const dy = py - yy;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            draw(ctx, isSelected) {
+                ctx.strokeStyle = isSelected ? '#00d9ff' : 
+                                  this.value === 1 ? '#39ff14' : '#666';
+                ctx.lineWidth = isSelected ? 3 : 2;
+                
+                ctx.beginPath();
+                ctx.moveTo(this.points[0].x, this.points[0].y);
+                for (let i = 1; i < this.points.length; i++) {
+                    ctx.lineTo(this.points[i].x, this.points[i].y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        function init() {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            
+            window.addEventListener('resize', resizeCanvas);
+            canvas.addEventListener('mousedown', onMouseDown);
+            canvas.addEventListener('mousemove', onMouseMove);
+            canvas.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('keydown', onKeyDown);
+            
+            // Enable mouse wheel scrolling on sidebars
+            const sidebar = document.getElementById('sidebar');
+            const rightPanel = document.getElementById('right-panel');
+            
+            sidebar.addEventListener('wheel', function(e) {
+                e.stopPropagation();
+            }, { passive: true });
+            
+            rightPanel.addEventListener('wheel', function(e) {
+                e.stopPropagation();
+            }, { passive: true });
+            
+            document.querySelectorAll('.component-item').forEach(item => {
+                item.addEventListener('dragstart', onDragStart);
+            });
+            
+            canvas.addEventListener('dragover', onDragOver);
+            canvas.addEventListener('drop', onDrop);
+            
+            setTool('select');
+            render();
+        }
+
+        function resizeCanvas() {
+            const container = document.getElementById('canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            render();
+        }
+
+        function startNewProject() {
+            document.getElementById('landing').classList.add('hidden');
+            document.getElementById('workspace').style.display = 'flex';
+            init();
+        }
+
+        function showProjects() {
+            document.getElementById('landing').classList.add('hidden');
+            document.getElementById('projects-gallery').style.display = 'flex';
+        }
+
+        function backToLanding() {
+            document.getElementById('projects-gallery').style.display = 'none';
+            document.getElementById('landing').classList.remove('hidden');
+        }
+
+        function backToHome() {
+            if (confirm('Are you sure you want to go back? Unsaved changes will be lost.')) {
+                document.getElementById('workspace').style.display = 'none';
+                document.getElementById('landing').classList.remove('hidden');
+                components = [];
+                wires = [];
+                history = [];
+                historyIndex = -1;
+                document.body.classList.remove('fullscreen');
+            }
+        }
+
+        function loadProject(projectName) {
+            document.getElementById('projects-gallery').style.display = 'none';
+            document.getElementById('workspace').style.display = 'flex';
+            init();
+            
+            setTimeout(() => {
+                if (projectName === 'halfAdder') {
+                    generateHalfAdder();
+                } else if (projectName === 'fullAdder') {
+                    generateFullAdder();
+                } else if (projectName === 'multiplexer') {
+                    generateMultiplexer();
+                } else if (projectName === 'srLatch') {
+                    generateSRLatch();
+                } else if (projectName === 'decoder') {
+                    generateDecoder();
+                } else if (projectName === 'xorGate') {
+                    generateSimpleGate('XOR');
+                }
+                saveState();
+                simulate();
+                render();
+            }, 100);
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.getElementById('select-tool').classList.toggle('active', tool === 'select');
+            document.getElementById('wire-tool').classList.toggle('active', tool === 'wire');
+            canvas.style.cursor = tool === 'wire' ? 'crosshair' : 'default';
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            const btn = sidebar.querySelector('.sidebar-toggle');
+            btn.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+            setTimeout(resizeCanvas, 300);
+        }
+
+        function togglePanel() {
+            const panel = document.getElementById('right-panel');
+            panel.classList.toggle('collapsed');
+            const btn = panel.querySelector('.panel-toggle');
+            btn.textContent = panel.classList.contains('collapsed') ? '◀' : '▶';
+            setTimeout(resizeCanvas, 300);
+        }
+
+        function toggleFullscreen() {
+            document.body.classList.toggle('fullscreen');
+            const btn = event.target;
+            if (document.body.classList.contains('fullscreen')) {
+                btn.textContent = '⛶ Restore';
+            } else {
+                btn.textContent = '⛶ Maximize Canvas';
+            }
+            setTimeout(resizeCanvas, 100);
+        }
+
+        let draggedType = null;
+
+        function onDragStart(e) {
+            draggedType = e.target.dataset.type || e.target.parentElement.dataset.type;
+        }
+
+        function onDragOver(e) {
+            e.preventDefault();
+        }
+
+        function onDrop(e) {
+            e.preventDefault();
+            if (!draggedType) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const comp = new Component(draggedType, x - 40, y - 30);
+            components.push(comp);
+            saveState();
+            render();
+            
+            draggedType = null;
+        }
+
+        function onMouseDown(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (currentTool === 'select') {
+                selectedObject = null;
+                for (let i = components.length - 1; i >= 0; i--) {
+                    if (components[i].contains(x, y)) {
+                        selectedObject = components[i];
+                        
+                        if (components[i].type === 'INPUT') {
+                            components[i].state = components[i].state === 1 ? 0 : 1;
+                            simulate();
+                            render();
+                            return;
+                        }
+                        
+                        isDragging = true;
+                        dragOffset.x = x - components[i].x;
+                        dragOffset.y = y - components[i].y;
+                        render();
+                        return;
+                    }
+                }
+                
+                for (let i = wires.length - 1; i >= 0; i--) {
+                    if (wires[i].contains(x, y)) {
+                        selectedObject = wires[i];
+                        render();
+                        return;
+                    }
+                }
+                
+                selectedObject = null;
+                render();
+            } else if (currentTool === 'wire') {
+                for (const comp of components) {
+                    const outputPins = comp.getOutputPins();
+                    for (let i = 0; i < outputPins.length; i++) {
+                        const pin = outputPins[i];
+                        const dist = Math.sqrt((x - pin.x) ** 2 + (y - pin.y) ** 2);
+                        if (dist < 8) {
+                            wireStart = { comp, pin: i, pos: pin };
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        function onMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (isDragging && selectedObject && selectedObject instanceof Component) {
+                selectedObject.x = Math.round((x - dragOffset.x) / GRID_SIZE) * GRID_SIZE;
+                selectedObject.y = Math.round((y - dragOffset.y) / GRID_SIZE) * GRID_SIZE;
+                
+                wires.forEach(wire => {
+                    if (wire.from.comp === selectedObject || wire.to.comp === selectedObject) {
+                        wire.points = wire.calculatePoints();
+                    }
+                });
+                
+                render();
+            } else if (wireStart) {
+                tempWire = { start: wireStart.pos, end: { x, y } };
+                render();
+            }
+        }
+
+        function onMouseUp(e) {
+            if (isDragging) {
+                isDragging = false;
+                saveState();
+            }
+            
+            if (wireStart) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                for (const comp of components) {
+                    if (comp === wireStart.comp) continue;
+                    
+                    const inputPins = comp.getInputPins();
+                    for (let i = 0; i < inputPins.length; i++) {
+                        const pin = inputPins[i];
+                        const dist = Math.sqrt((x - pin.x) ** 2 + (y - pin.y) ** 2);
+                        if (dist < 8) {
+                            const wire = new Wire(wireStart.comp, wireStart.pin, comp, i);
+                            wires.push(wire);
+                            saveState();
+                            simulate();
+                            break;
+                        }
+                    }
+                }
+                
+                wireStart = null;
+                tempWire = null;
+                render();
+            }
+        }
+
+        function onKeyDown(e) {
+            if (e.key === 'Delete' && selectedObject) {
+                if (selectedObject instanceof Component) {
+                    components = components.filter(c => c !== selectedObject);
+                    wires = wires.filter(w => w.from.comp !== selectedObject && w.to.comp !== selectedObject);
+                } else if (selectedObject instanceof Wire) {
+                    wires = wires.filter(w => w !== selectedObject);
+                }
+                selectedObject = null;
+                saveState();
+                simulate();
+                render();
+            } else if (e.ctrlKey && e.key === 'c' && selectedObject instanceof Component) {
+                window.copiedComponent = selectedObject;
+            } else if (e.ctrlKey && e.key === 'v' && window.copiedComponent) {
+                const comp = new Component(window.copiedComponent.type, 
+                    window.copiedComponent.x + 100, 
+                    window.copiedComponent.y + 20);
+                if (window.copiedComponent.type === 'INPUT') {
+                    comp.state = window.copiedComponent.state;
+                }
+                components.push(comp);
+                selectedObject = comp;
+                saveState();
+                render();
+            } else if (e.ctrlKey && e.key === 'z') {
+                undo();
+            } else if (e.ctrlKey && e.key === 'y') {
+                redo();
+            }
+        }
+
+        function render() {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += GRID_SIZE) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += GRID_SIZE) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            wires.forEach(wire => {
+                wire.draw(ctx, wire === selectedObject);
+            });
+            
+            if (tempWire) {
+                ctx.strokeStyle = '#00d9ff80';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(tempWire.start.x, tempWire.start.y);
+                
+                const midX = (tempWire.start.x + tempWire.end.x) / 2;
+                ctx.lineTo(midX, tempWire.start.y);
+                ctx.lineTo(midX, tempWire.end.y);
+                ctx.lineTo(tempWire.end.x, tempWire.end.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            components.forEach(comp => {
+                comp.draw(ctx, comp === selectedObject);
+            });
+        }
+
+        function simulate() {
+            components.forEach(comp => {
+                comp.inputValues.fill(0);
+            });
+            
+            wires.forEach(wire => {
+                const fromComp = wire.from.comp;
+                const toComp = wire.to.comp;
+                wire.value = fromComp.outputValue;
+                toComp.inputValues[wire.to.pin] = wire.value;
+            });
+            
+            const sorted = topologicalSort();
+            sorted.forEach(comp => {
+                comp.evaluate();
+            });
+            
+            wires.forEach(wire => {
+                wire.value = wire.from.comp.outputValue;
+                wire.to.comp.inputValues[wire.to.pin] = wire.value;
+            });
+        }
+
+        function topologicalSort() {
+            const visited = new Set();
+            const sorted = [];
+            
+            function visit(comp) {
+                if (visited.has(comp)) return;
+                visited.add(comp);
+                
+                wires.forEach(wire => {
+                    if (wire.to.comp === comp) {
+                        visit(wire.from.comp);
+                    }
+                });
+                
+                sorted.push(comp);
+            }
+            
+            components.forEach(comp => visit(comp));
+            return sorted;
+        }
+
+        function saveState() {
+            const state = {
+                components: components.map(c => ({
+                    id: c.id,
+                    type: c.type,
+                    x: c.x,
+                    y: c.y,
+                    state: c.state
+                })),
+                wires: wires.map(w => ({
+                    id: w.id,
+                    fromId: w.from.comp.id,
+                    fromPin: w.from.pin,
+                    toId: w.to.comp.id,
+                    toPin: w.to.pin
+                }))
+            };
+            
+            history = history.slice(0, historyIndex + 1);
+            history.push(JSON.stringify(state));
+            historyIndex++;
+            
+            if (history.length > 50) {
+                history.shift();
+                historyIndex--;
+            }
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                loadState(history[historyIndex]);
+            }
+        }
+
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                loadState(history[historyIndex]);
+            }
+        }
+
+        function loadState(stateStr) {
+            const state = JSON.parse(stateStr);
+            
+            components = state.components.map(c => {
+                const comp = new Component(c.type, c.x, c.y);
+                comp.id = c.id;
+                comp.state = c.state;
+                return comp;
+            });
+            
+            wires = state.wires.map(w => {
+                const fromComp = components.find(c => c.id === w.fromId);
+                const toComp = components.find(c => c.id === w.toId);
+                const wire = new Wire(fromComp, w.fromPin, toComp, w.toPin);
+                wire.id = w.id;
+                return wire;
+            });
+            
+            selectedObject = null;
+            simulate();
+            render();
+        }
+
+        function clearCanvas() {
+            if (confirm('Are you sure you want to clear the canvas?')) {
+                components = [];
+                wires = [];
+                selectedObject = null;
+                history = [];
+                historyIndex = -1;
+                document.getElementById('truth-table-container').innerHTML = '';
+                render();
+            }
+        }
+
+        function setPrompt(text) {
+            document.getElementById('ai-prompt').value = text;
+        }
+
+        function generateCircuit() {
+            const prompt = document.getElementById('ai-prompt').value.toLowerCase();
+            
+            components = [];
+            wires = [];
+            selectedObject = null;
+            
+            if (prompt.includes('half adder')) {
+                generateHalfAdder();
+            } else if (prompt.includes('full adder')) {
+                generateFullAdder();
+            } else if (prompt.includes('multiplexer') || prompt.includes('mux')) {
+                generateMultiplexer();
+            } else if (prompt.includes('sr latch') || prompt.includes('latch')) {
+                generateSRLatch();
+            } else if (prompt.includes('decoder')) {
+                generateDecoder();
+            } else if (prompt.includes('and')) {
+                generateSimpleGate('AND');
+            } else if (prompt.includes('or')) {
+                generateSimpleGate('OR');
+            } else if (prompt.includes('not')) {
+                generateSimpleGate('NOT');
+            } else if (prompt.includes('xor')) {
+                generateSimpleGate('XOR');
+            } else {
+                alert('Circuit pattern not recognized. Try: half adder, full adder, multiplexer, SR latch, decoder, or simple gates (AND, OR, NOT, XOR)');
+                return;
+            }
+            
+            saveState();
+            simulate();
+            render();
+        }
+
+        function generateHalfAdder() {
+            const a = new Component('INPUT', 100, 100);
+            a.state = 0;
+            const b = new Component('INPUT', 100, 200);
+            b.state = 0;
+            
+            const xor = new Component('XOR', 300, 150);
+            const and = new Component('AND', 300, 250);
+            
+            const sum = new Component('OUTPUT', 500, 150);
+            const carry = new Component('OUTPUT', 500, 250);
+            
+            components.push(a, b, xor, and, sum, carry);
+            
+            wires.push(
+                new Wire(a, 0, xor, 0),
+                new Wire(b, 0, xor, 1),
+                new Wire(a, 0, and, 0),
+                new Wire(b, 0, and, 1),
+                new Wire(xor, 0, sum, 0),
+                new Wire(and, 0, carry, 0)
+            );
+        }
+
+        function generateFullAdder() {
+            const a = new Component('INPUT', 100, 100);
+            const b = new Component('INPUT', 100, 200);
+            const cin = new Component('INPUT', 100, 300);
+            a.state = 0;
+            b.state = 0;
+            cin.state = 0;
+            
+            const xor1 = new Component('XOR', 300, 150);
+            const xor2 = new Component('XOR', 500, 150);
+            const and1 = new Component('AND', 300, 250);
+            const and2 = new Component('AND', 500, 250);
+            const or = new Component('OR', 700, 200);
+            
+            const sum = new Component('OUTPUT', 700, 150);
+            const cout = new Component('OUTPUT', 900, 200);
+            
+            components.push(a, b, cin, xor1, xor2, and1, and2, or, sum, cout);
+            
+            wires.push(
+                new Wire(a, 0, xor1, 0),
+                new Wire(b, 0, xor1, 1),
+                new Wire(xor1, 0, xor2, 0),
+                new Wire(cin, 0, xor2, 1),
+                new Wire(xor2, 0, sum, 0),
+                new Wire(a, 0, and1, 0),
+                new Wire(b, 0, and1, 1),
+                new Wire(xor1, 0, and2, 0),
+                new Wire(cin, 0, and2, 1),
+                new Wire(and1, 0, or, 0),
+                new Wire(and2, 0, or, 1),
+                new Wire(or, 0, cout, 0)
+            );
+        }
+
+        function generateMultiplexer() {
+            const a = new Component('INPUT', 100, 100);
+            const b = new Component('INPUT', 100, 200);
+            const sel = new Component('INPUT', 100, 300);
+            a.state = 0;
+            b.state = 0;
+            sel.state = 0;
+            
+            const not = new Component('NOT', 300, 300);
+            const and1 = new Component('AND', 500, 150);
+            const and2 = new Component('AND', 500, 250);
+            const or = new Component('OR', 700, 200);
+            const out = new Component('OUTPUT', 900, 200);
+            
+            components.push(a, b, sel, not, and1, and2, or, out);
+            
+            wires.push(
+                new Wire(sel, 0, not, 0),
+                new Wire(a, 0, and1, 0),
+                new Wire(not, 0, and1, 1),
+                new Wire(b, 0, and2, 0),
+                new Wire(sel, 0, and2, 1),
+                new Wire(and1, 0, or, 0),
+                new Wire(and2, 0, or, 1),
+                new Wire(or, 0, out, 0)
+            );
+        }
+
+        function generateSRLatch() {
+            const s = new Component('INPUT', 100, 150);
+            const r = new Component('INPUT', 100, 350);
+            s.state = 0;
+            r.state = 0;
+            
+            const nor1 = new Component('NOR', 400, 200);
+            const nor2 = new Component('NOR', 400, 400);
+            
+            const q = new Component('OUTPUT', 700, 200);
+            const qn = new Component('OUTPUT', 700, 400);
+            
+            components.push(s, r, nor1, nor2, q, qn);
+            
+            wires.push(
+                new Wire(s, 0, nor1, 0),
+                new Wire(r, 0, nor2, 1),
+                new Wire(nor1, 0, q, 0),
+                new Wire(nor2, 0, qn, 0),
+                new Wire(nor2, 0, nor1, 1),
+                new Wire(nor1, 0, nor2, 0)
+            );
+        }
+
+        function generateDecoder() {
+            const a = new Component('INPUT', 100, 150);
+            const b = new Component('INPUT', 100, 250);
+            a.state = 0;
+            b.state = 0;
+            
+            const not1 = new Component('NOT', 250, 150);
+            const not2 = new Component('NOT', 250, 250);
+            
+            const and1 = new Component('AND', 450, 100);
+            const and2 = new Component('AND', 450, 200);
+            const and3 = new Component('AND', 450, 300);
+            const and4 = new Component('AND', 450, 400);
+            
+            const out0 = new Component('OUTPUT', 650, 100);
+            const out1 = new Component('OUTPUT', 650, 200);
+            const out2 = new Component('OUTPUT', 650, 300);
+            const out3 = new Component('OUTPUT', 650, 400);
+            
+            components.push(a, b, not1, not2, and1, and2, and3, and4, out0, out1, out2, out3);
+            
+            wires.push(
+                new Wire(a, 0, not1, 0),
+                new Wire(b, 0, not2, 0),
+                new Wire(not1, 0, and1, 0),
+                new Wire(not2, 0, and1, 1),
+                new Wire(not1, 0, and2, 0),
+                new Wire(b, 0, and2, 1),
+                new Wire(a, 0, and3, 0),
+                new Wire(not2, 0, and3, 1),
+                new Wire(a, 0, and4, 0),
+                new Wire(b, 0, and4, 1),
+                new Wire(and1, 0, out0, 0),
+                new Wire(and2, 0, out1, 0),
+                new Wire(and3, 0, out2, 0),
+                new Wire(and4, 0, out3, 0)
+            );
+        }
+
+        function generateSimpleGate(type) {
+            const inputCount = type === 'NOT' ? 1 : 2;
+            
+            const inputs = [];
+            for (let i = 0; i < inputCount; i++) {
+                const inp = new Component('INPUT', 100, 150 + i * 100);
+                inp.state = 0;
+                inputs.push(inp);
+                components.push(inp);
+            }
+            
+            const gate = new Component(type, 350, 150 + (inputCount - 1) * 50);
+            const output = new Component('OUTPUT', 600, 150 + (inputCount - 1) * 50);
+            
+            components.push(gate, output);
+            
+            inputs.forEach((inp, i) => {
+                wires.push(new Wire(inp, 0, gate, i));
+            });
+            wires.push(new Wire(gate, 0, output, 0));
+        }
+
+        function analyzeCircuit() {
+            const inputs = components.filter(c => c.type === 'INPUT');
+            const outputs = components.filter(c => c.type === 'OUTPUT');
+            
+            if (inputs.length === 0 || outputs.length === 0) {
+                alert('Circuit must have at least one INPUT and one OUTPUT component.');
+                return;
+            }
+            
+            const numCombinations = Math.pow(2, inputs.length);
+            const truthTable = [];
+            
+            for (let i = 0; i < numCombinations; i++) {
+                const row = {};
+                
+                inputs.forEach((inp, idx) => {
+                    const bit = (i >> (inputs.length - 1 - idx)) & 1;
+                    inp.state = bit;
+                    row[`I${idx}`] = bit;
+                });
+                
+                simulate();
+                
+                outputs.forEach((out, idx) => {
+                    row[`O${idx}`] = out.outputValue;
+                });
+                
+                truthTable.push(row);
+            }
+            
+            displayTruthTable(truthTable, inputs.length, outputs.length);
+            render();
+        }
+
+        function displayTruthTable(table, numInputs, numOutputs) {
+            let html = '<div style="margin-top: 1.5rem;"><div class="panel-title">Truth Table</div>';
+            html += '<table id="truth-table"><thead><tr>';
+            
+            for (let i = 0; i < numInputs; i++) {
+                html += `<th>I${i}</th>`;
+            }
+            for (let i = 0; i < numOutputs; i++) {
+                html += `<th>O${i}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+            
+            table.forEach(row => {
+                html += '<tr>';
+                for (let i = 0; i < numInputs; i++) {
+                    html += `<td>${row[`I${i}`]}</td>`;
+                }
+                for (let i = 0; i < numOutputs; i++) {
+                    html += `<td style="color: ${row[`O${i}`] === 1 ? '#39ff14' : '#666'}; font-weight: bold;">${row[`O${i}`]}</td>`;
+                }
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table></div>';
+            document.getElementById('truth-table-container').innerHTML = html;
+        }
+
+        function optimizeCircuit() {
+            alert('Quine-McCluskey optimization algorithm will be implemented in future updates.\n\nThis feature will minimize Boolean expressions and suggest optimized circuit designs.');
+        }
+
+        function exportCircuit() {
+            const exportData = {
+                version: '1.0',
+                projectName: 'CircuLab_Circuit',
+                timestamp: new Date().toISOString(),
+                components: components.map(c => ({
+                    id: c.id,
+                    type: c.type,
+                    position: { x: c.x, y: c.y },
+                    state: c.state,
+                    dimensions: { width: c.width, height: c.height }
+                })),
+                wires: wires.map(w => ({
+                    id: w.id,
+                    connection: {
+                        from: { componentId: w.from.comp.id, pin: w.from.pin },
+                        to: { componentId: w.to.comp.id, pin: w.to.pin }
+                    },
+                    value: w.value
+                })),
+                metadata: {
+                    totalComponents: components.length,
+                    totalWires: wires.length,
+                    inputCount: components.filter(c => c.type === 'INPUT').length,
+                    outputCount: components.filter(c => c.type === 'OUTPUT').length
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `circulab_circuit_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const btn = event.target;
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                btn.textContent = '−';
+            } else {
+                content.classList.add('collapsed');
+                btn.textContent = '+';
+            }
+        }
+    </script>
+</body>
+</html>
