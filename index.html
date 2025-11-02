@@ -26,48 +26,106 @@
             flex-direction: column;
         }
 
-        /* Landing Page */
+        /* Landing Page with Vertical Split */
         #landing {
+            position: relative;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            overflow: hidden;
+        }
+
+        #landing::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: #0D0D0D;
+            z-index: 0;
+        }
+
+        #landing::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: #E0E0E0;
+            z-index: 0;
+        }
+
+        .landing-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
         }
 
         #landing h1 {
             font-family: 'Oswald', sans-serif;
-            font-size: 5rem;
+            font-size: 6rem;
             font-weight: 700;
-            color: #fff;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             letter-spacing: 0.3rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .split-text {
+            background: linear-gradient(to right, #FFFFFF 50%, #2a2a2a 50%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         #landing p {
-            font-size: 1.3rem;
-            color: #a0a0a0;
+            font-size: 1.4rem;
+            color: #808080;
             margin-bottom: 3rem;
-            font-weight: 300;
+            font-weight: 400;
+            text-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
         }
 
         .landing-buttons {
             display: flex;
             gap: 2rem;
+            justify-content: center;
         }
 
         .landing-btn {
-            padding: 1.2rem 2.5rem;
+            padding: 1.3rem 2.8rem;
             font-family: 'Oswald', sans-serif;
             font-size: 1.1rem;
             font-weight: 600;
-            border: 2px solid;
+            border: 3px solid;
             background: transparent;
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 0.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .landing-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+            z-index: -1;
+        }
+
+        .landing-btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
@@ -75,11 +133,14 @@
             color: #00d9ff;
         }
 
-        .btn-primary:hover {
+        .btn-primary::before {
             background: #00d9ff;
+        }
+
+        .btn-primary:hover {
             color: #0a0a0a;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 217, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.4);
         }
 
         .btn-secondary {
@@ -87,11 +148,56 @@
             color: #39ff14;
         }
 
-        .btn-secondary:hover {
+        .btn-secondary::before {
             background: #39ff14;
+        }
+
+        .btn-secondary:hover {
             color: #0a0a0a;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(57, 255, 20, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(57, 255, 20, 0.4);
+        }
+
+        /* Context Menu */
+        #context-menu {
+            position: absolute;
+            background: #1a1a1a;
+            border: 2px solid #00d9ff;
+            min-width: 180px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+        }
+
+        .context-menu-item {
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .context-menu-item:hover {
+            background: #00d9ff;
+            color: #0a0a0a;
+        }
+
+        .context-menu-item.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .context-menu-item.disabled:hover {
+            background: transparent;
+            color: #e0e0e0;
         }
 
         /* Saved Projects Gallery */
@@ -275,33 +381,6 @@
             scrollbar-color: #00d9ff #0a0a0a;
         }
 
-        #sidebar::-webkit-scrollbar {
-            width: 14px !important;
-            display: block !important;
-            background: #0a0a0a;
-        }
-
-        #sidebar::-webkit-scrollbar-track {
-            background: #0a0a0a !important;
-            border-left: 2px solid #00d9ff;
-        }
-
-        #sidebar::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #00d9ff 0%, #00b8d9 100%) !important;
-            border-radius: 10px;
-            border: 3px solid #0a0a0a;
-            min-height: 50px;
-        }
-
-        #sidebar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #00ffff 0%, #00d9ff 100%) !important;
-            box-shadow: 0 0 10px rgba(0, 217, 255, 0.8);
-        }
-
-        #sidebar::-webkit-scrollbar-thumb:active {
-            background: #39ff14 !important;
-        }
-
         #sidebar.collapsed {
             margin-left: -280px;
         }
@@ -336,9 +415,37 @@
             right: -315px;
         }
 
+        #sidebar::-webkit-scrollbar {
+            width: 14px !important;
+            display: block !important;
+            background: #0a0a0a;
+        }
+
+        #sidebar::-webkit-scrollbar-track {
+            background: #0a0a0a !important;
+            border-left: 2px solid #00d9ff;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00d9ff 0%, #00b8d9 100%) !important;
+            border-radius: 10px;
+            border: 3px solid #0a0a0a;
+            min-height: 50px;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00ffff 0%, #00d9ff 100%) !important;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.8);
+        }
+
+        #sidebar::-webkit-scrollbar-thumb:active {
+            background: #39ff14 !important;
+        }
+
         .sidebar-section {
             padding: 1.5rem;
             border-bottom: 1px solid #2a2a2a;
+            flex-shrink: 0;
         }
 
         .sidebar-title {
@@ -355,6 +462,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.8rem;
+            max-height: none;
         }
 
         .component-item {
@@ -419,33 +527,6 @@
             scrollbar-color: #39ff14 #0a0a0a;
         }
 
-        #right-panel::-webkit-scrollbar {
-            width: 14px !important;
-            display: block !important;
-            background: #0a0a0a;
-        }
-
-        #right-panel::-webkit-scrollbar-track {
-            background: #0a0a0a !important;
-            border-right: 2px solid #39ff14;
-        }
-
-        #right-panel::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #39ff14 0%, #2dd910 100%) !important;
-            border-radius: 10px;
-            border: 3px solid #0a0a0a;
-            min-height: 50px;
-        }
-
-        #right-panel::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #50ff30 0%, #39ff14 100%) !important;
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.8);
-        }
-
-        #right-panel::-webkit-scrollbar-thumb:active {
-            background: #00d9ff !important;
-        }
-
         #right-panel.collapsed {
             margin-right: -350px;
         }
@@ -478,6 +559,33 @@
 
         #right-panel.collapsed .panel-toggle {
             left: -385px;
+        }
+
+        #right-panel::-webkit-scrollbar {
+            width: 14px !important;
+            display: block !important;
+            background: #0a0a0a;
+        }
+
+        #right-panel::-webkit-scrollbar-track {
+            background: #0a0a0a !important;
+            border-right: 2px solid #39ff14;
+        }
+
+        #right-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #39ff14 0%, #2dd910 100%) !important;
+            border-radius: 10px;
+            border: 3px solid #0a0a0a;
+            min-height: 50px;
+        }
+
+        #right-panel::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #50ff30 0%, #39ff14 100%) !important;
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.8);
+        }
+
+        #right-panel::-webkit-scrollbar-thumb:active {
+            background: #00d9ff !important;
         }
 
         .panel-section {
@@ -658,27 +766,6 @@
         }
 
         /* Scrollbar Styling */
-        #sidebar::-webkit-scrollbar,
-        #right-panel::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        #sidebar::-webkit-scrollbar-track,
-        #right-panel::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-
-        #sidebar::-webkit-scrollbar-thumb,
-        #right-panel::-webkit-scrollbar-thumb {
-            background: #3a3a3a;
-            border-radius: 5px;
-        }
-
-        #sidebar::-webkit-scrollbar-thumb:hover,
-        #right-panel::-webkit-scrollbar-thumb:hover {
-            background: #00d9ff;
-        }
-
         #truth-table-container::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -724,7 +811,7 @@
         /* Mobile Responsive */
         @media (max-width: 768px) {
             #landing h1 {
-                font-size: 3rem;
+                font-size: 3.5rem;
             }
 
             #sidebar {
@@ -744,21 +831,31 @@
 </head>
 <body>
     <div id="app">
-        <!-- Landing Page -->
+        <!-- Landing Page with Vertical Split -->
         <div id="landing">
-            <h1>CIRCULAB</h1>
-            <p>Interactive Digital Circuit Simulator with AI-Powered Generation</p>
-            <div class="landing-buttons">
-                <button class="landing-btn btn-primary" onclick="startNewProject()">START NEW PROJECT</button>
-                <button class="landing-btn btn-secondary" onclick="showProjects()">VIEW SAVED PROJECTS</button>
+            <div class="landing-content">
+                <h1><span class="split-text">CIRCULAB</span></h1>
+                <p>Interactive Digital Circuit Simulator with AI-Powered Generation</p>
+                <div class="landing-buttons">
+                    <button class="landing-btn btn-primary" onclick="startNewProject()">START NEW PROJECT</button>
+                    <button class="landing-btn btn-secondary" onclick="showProjects()">VIEW SAVED PROJECTS</button>
+                </div>
             </div>
+        </div>
+
+        <!-- Context Menu -->
+        <div id="context-menu">
+            <div class="context-menu-item" onclick="contextMenuAction('copy')">Copy Object</div>
+            <div class="context-menu-item" onclick="contextMenuAction('cut')">Cut Object</div>
+            <div class="context-menu-item" onclick="contextMenuAction('paste')">Paste Object</div>
+            <div class="context-menu-item" onclick="contextMenuAction('remove')">Remove Object</div>
         </div>
 
         <!-- Saved Projects Gallery -->
         <div id="projects-gallery">
             <div class="gallery-header">
                 <h1>SAVED PROJECTS</h1>
-                <button class="back-btn" onclick="backToLanding()">← BACK TO HOME</button>
+                <button class="back-btn" onclick="backToLanding()">BACK TO HOME</button>
             </div>
             <div class="projects-grid">
                 <div class="project-card" onclick="loadProject('halfAdder')">
@@ -817,72 +914,65 @@
             <header>
                 <div class="logo">CIRCULAB</div>
                 <div class="header-actions">
-                    <button class="header-btn" onclick="undo()">↶ Undo</button>
-                    <button class="header-btn" onclick="redo()">↷ Redo</button>
+                    <button class="header-btn" onclick="undo()">Undo</button>
+                    <button class="header-btn" onclick="redo()">Redo</button>
                     <button class="header-btn" onclick="clearCanvas()">Clear All</button>
-                    <button class="header-btn maximize" onclick="toggleFullscreen()">⛶ Maximize Canvas</button>
-                    <button class="header-btn" onclick="backToHome()">← Home</button>
+                    <button class="header-btn maximize" onclick="toggleFullscreen()">Maximize Canvas</button>
+                    <button class="header-btn" onclick="backToHome()">Home</button>
                 </div>
             </header>
 
             <div id="main">
                 <!-- Left Sidebar -->
                 <div id="sidebar">
-                    <button class="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">&#9664;</button>
                     <div class="sidebar-section">
                         <div class="sidebar-title">Tools</div>
-                        <div class="toolbar">
                         <div class="toolbar">
                             <button class="tool-btn active" id="select-tool" onclick="setTool('select')">Select</button>
                             <button class="tool-btn" id="wire-tool" onclick="setTool('wire')">Wire</button>
                         </div>
-                        </div>
                     </div>
 
                     <div class="sidebar-section">
-                        <div class="sidebar-title">
-                            Components
-                            <button class="section-collapse-btn" onclick="toggleSection('components')">−</button>
-                        </div>
-                        <div id="components-content" class="section-content">
+                        <div class="sidebar-title">Components</div>
                         <div class="component-list">
                             <div class="component-item" draggable="true" data-type="INPUT">
-                                <span class="component-icon">🔘</span>
+                                <span class="component-icon">&#9679;</span>
                                 <span>INPUT</span>
                             </div>
                             <div class="component-item" draggable="true" data-type="OUTPUT">
-                                <span class="component-icon">💡</span>
+                                <span class="component-icon">&#9899;</span>
                                 <span>OUTPUT</span>
                             </div>
                             <div class="component-item" draggable="true" data-type="AND">
-                                <span class="component-icon">⋀</span>
+                                <span class="component-icon">&and;</span>
                                 <span>AND Gate</span>
                             </div>
                             <div class="component-item" draggable="true" data-type="OR">
-                                <span class="component-icon">⋁</span>
+                                <span class="component-icon">&or;</span>
                                 <span>OR Gate</span>
                             </div>
                             <div class="component-item" draggable="true" data-type="NOT">
-                                <span class="component-icon">¬</span>
+                                <span class="component-icon">&not;</span>
                                 <span>NOT Gate</span>
                             </div>
                             <div class="component-item" draggable="true" data-type="NAND">
-                                <span class="component-icon">⊼</span>
+                                <span class="component-icon">&#8892;</span>
                                 <span>NAND Gate</span>
                             </div>
                             <div class="component-item" draggable="true" data-type="NOR">
-                                <span class="component-icon">⊽</span>
+                                <span class="component-icon">&#8893;</span>
                                 <span>NOR Gate</span>
                             </div>
                             <div class="component-item" draggable="true" data-type="XOR">
-                                <span class="component-icon">⊕</span>
+                                <span class="component-icon">&oplus;</span>
                                 <span>XOR Gate</span>
                             </div>
                             <div class="component-item" draggable="true" data-type="XNOR">
-                                <span class="component-icon">⊙</span>
+                                <span class="component-icon">&#8857;</span>
                                 <span>XNOR Gate</span>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -894,13 +984,9 @@
 
                 <!-- Right Panel -->
                 <div id="right-panel">
-                    <button class="panel-toggle" onclick="togglePanel()">▶</button>
+                    <button class="panel-toggle" onclick="togglePanel()">&#9654;</button>
                     <div class="panel-section">
-                        <div class="panel-title">
-                            AI Circuit Generator
-                            <button class="section-collapse-btn" onclick="toggleSection('ai-generator')">−</button>
-                        </div>
-                        <div id="ai-generator-content" class="section-content">
+                        <div class="panel-title">AI Circuit Generator</div>
                         <textarea id="ai-prompt" placeholder="Describe your circuit (e.g., 'Design a half adder')"></textarea>
                         <div class="suggestions">
                             <div class="suggestion-item" onclick="setPrompt('Design a half adder')">Design a half adder</div>
@@ -909,21 +995,15 @@
                             <div class="suggestion-item" onclick="setPrompt('Make an SR latch')">Make an SR latch</div>
                         </div>
                         <button class="action-btn" onclick="generateCircuit()">GENERATE</button>
-                        </div>
                     </div>
 
                     <div class="panel-section">
-                        <div class="panel-title">
-                            Analysis
-                            <button class="section-collapse-btn" onclick="toggleSection('analysis')">−</button>
-                        </div>
-                        <div id="analysis-content" class="section-content">
+                        <div class="panel-title">Analysis</div>
                         <button class="action-btn secondary" onclick="analyzeCircuit()">RUN / ANALYZE</button>
                         <button class="action-btn tertiary" onclick="optimizeCircuit()">OPTIMIZE CIRCUIT</button>
                         <button class="action-btn tertiary" onclick="exportCircuit()">EXPORT LOGICAL CIRCUIT</button>
                         
                         <div id="truth-table-container"></div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -945,6 +1025,8 @@
         let history = [];
         let historyIndex = -1;
         let nextId = 1;
+        let clipboard = null;
+        let contextMenuPos = { x: 0, y: 0 };
 
         // Component Class
         class Component {
@@ -1001,7 +1083,7 @@
                         this.outputValue = this.state;
                         break;
                     case 'OUTPUT':
-                        this.outputValue = this.inputValues[0];
+                        this.outputValue = this.inputValues[0] || 0;
                         break;
                     case 'AND':
                         this.outputValue = this.inputValues.every(v => v === 1) ? 1 : 0;
@@ -1010,7 +1092,7 @@
                         this.outputValue = this.inputValues.some(v => v === 1) ? 1 : 0;
                         break;
                     case 'NOT':
-                        this.outputValue = this.inputValues[0] === 1 ? 0 : 1;
+                        this.outputValue = (this.inputValues[0] === 1) ? 0 : 1;
                         break;
                     case 'NAND':
                         this.outputValue = this.inputValues.every(v => v === 1) ? 0 : 1;
@@ -1022,7 +1104,7 @@
                         this.outputValue = this.inputValues.filter(v => v === 1).length % 2;
                         break;
                     case 'XNOR':
-                        this.outputValue = this.inputValues.filter(v => v === 1).length % 2 === 0 ? 1 : 0;
+                        this.outputValue = (this.inputValues.filter(v => v === 1).length % 2 === 0) ? 1 : 0;
                         break;
                 }
             }
@@ -1163,7 +1245,9 @@
             canvas.addEventListener('mousedown', onMouseDown);
             canvas.addEventListener('mousemove', onMouseMove);
             canvas.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('contextmenu', onContextMenu);
             document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('click', hideContextMenu);
             
             // Enable mouse wheel scrolling on sidebars
             const sidebar = document.getElementById('sidebar');
@@ -1259,7 +1343,7 @@
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('collapsed');
             const btn = sidebar.querySelector('.sidebar-toggle');
-            btn.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+            btn.innerHTML = sidebar.classList.contains('collapsed') ? '&#9654;' : '&#9664;';
             setTimeout(resizeCanvas, 300);
         }
 
@@ -1267,7 +1351,7 @@
             const panel = document.getElementById('right-panel');
             panel.classList.toggle('collapsed');
             const btn = panel.querySelector('.panel-toggle');
-            btn.textContent = panel.classList.contains('collapsed') ? '◀' : '▶';
+            btn.innerHTML = panel.classList.contains('collapsed') ? '&#9664;' : '&#9654;';
             setTimeout(resizeCanvas, 300);
         }
 
@@ -1275,9 +1359,9 @@
             document.body.classList.toggle('fullscreen');
             const btn = event.target;
             if (document.body.classList.contains('fullscreen')) {
-                btn.textContent = '⛶ Restore';
+                btn.textContent = 'Restore';
             } else {
-                btn.textContent = '⛶ Maximize Canvas';
+                btn.textContent = 'Maximize Canvas';
             }
             setTimeout(resizeCanvas, 100);
         }
@@ -1303,12 +1387,15 @@
             const comp = new Component(draggedType, x - 40, y - 30);
             components.push(comp);
             saveState();
+            simulate();
             render();
             
             draggedType = null;
         }
 
         function onMouseDown(e) {
+            if (e.button === 2) return; // Right click handled separately
+            
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -1415,6 +1502,106 @@
             }
         }
 
+        function onContextMenu(e) {
+            e.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            contextMenuPos = { x, y };
+            
+            // Check if clicking on selected object
+            let clickedOnSelected = false;
+            if (selectedObject) {
+                if (selectedObject instanceof Component && selectedObject.contains(x, y)) {
+                    clickedOnSelected = true;
+                } else if (selectedObject instanceof Wire && selectedObject.contains(x, y)) {
+                    clickedOnSelected = true;
+                }
+            }
+            
+            if (clickedOnSelected || clipboard) {
+                showContextMenu(e.clientX, e.clientY);
+            }
+        }
+
+        function showContextMenu(x, y) {
+            const menu = document.getElementById('context-menu');
+            menu.style.display = 'block';
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            
+            // Enable/disable menu items
+            const items = menu.querySelectorAll('.context-menu-item');
+            items[0].classList.toggle('disabled', !selectedObject); // Copy
+            items[1].classList.toggle('disabled', !selectedObject); // Cut
+            items[2].classList.toggle('disabled', !clipboard); // Paste
+            items[3].classList.toggle('disabled', !selectedObject); // Remove
+        }
+
+        function hideContextMenu() {
+            const menu = document.getElementById('context-menu');
+            menu.style.display = 'none';
+        }
+
+        function contextMenuAction(action) {
+            hideContextMenu();
+            
+            switch(action) {
+                case 'copy':
+                    if (selectedObject instanceof Component) {
+                        clipboard = {
+                            type: selectedObject.type,
+                            state: selectedObject.state
+                        };
+                    }
+                    break;
+                    
+                case 'cut':
+                    if (selectedObject instanceof Component) {
+                        clipboard = {
+                            type: selectedObject.type,
+                            state: selectedObject.state
+                        };
+                        components = components.filter(c => c !== selectedObject);
+                        wires = wires.filter(w => w.from.comp !== selectedObject && w.to.comp !== selectedObject);
+                        selectedObject = null;
+                        saveState();
+                        simulate();
+                        render();
+                    }
+                    break;
+                    
+                case 'paste':
+                    if (clipboard) {
+                        const comp = new Component(clipboard.type, contextMenuPos.x, contextMenuPos.y);
+                        if (clipboard.state !== undefined) {
+                            comp.state = clipboard.state;
+                        }
+                        components.push(comp);
+                        selectedObject = comp;
+                        saveState();
+                        simulate();
+                        render();
+                    }
+                    break;
+                    
+                case 'remove':
+                    if (selectedObject instanceof Component) {
+                        components = components.filter(c => c !== selectedObject);
+                        wires = wires.filter(w => w.from.comp !== selectedObject && w.to.comp !== selectedObject);
+                    } else if (selectedObject instanceof Wire) {
+                        wires = wires.filter(w => w !== selectedObject);
+                    }
+                    selectedObject = null;
+                    saveState();
+                    simulate();
+                    render();
+                    break;
+            }
+        }
+
         function onKeyDown(e) {
             if (e.key === 'Delete' && selectedObject) {
                 if (selectedObject instanceof Component) {
@@ -1428,17 +1615,21 @@
                 simulate();
                 render();
             } else if (e.ctrlKey && e.key === 'c' && selectedObject instanceof Component) {
-                window.copiedComponent = selectedObject;
-            } else if (e.ctrlKey && e.key === 'v' && window.copiedComponent) {
-                const comp = new Component(window.copiedComponent.type, 
-                    window.copiedComponent.x + 100, 
-                    window.copiedComponent.y + 20);
-                if (window.copiedComponent.type === 'INPUT') {
-                    comp.state = window.copiedComponent.state;
+                clipboard = {
+                    type: selectedObject.type,
+                    state: selectedObject.state
+                };
+            } else if (e.ctrlKey && e.key === 'v' && clipboard) {
+                const comp = new Component(clipboard.type, 
+                    Math.random() * 400 + 100, 
+                    Math.random() * 300 + 100);
+                if (clipboard.state !== undefined) {
+                    comp.state = clipboard.state;
                 }
                 components.push(comp);
                 selectedObject = comp;
                 saveState();
+                simulate();
                 render();
             } else if (e.ctrlKey && e.key === 'z') {
                 undo();
@@ -1497,9 +1688,8 @@
             
             wires.forEach(wire => {
                 const fromComp = wire.from.comp;
-                const toComp = wire.to.comp;
                 wire.value = fromComp.outputValue;
-                toComp.inputValues[wire.to.pin] = wire.value;
+                wire.to.comp.inputValues[wire.to.pin] = wire.value;
             });
             
             const sorted = topologicalSort();
@@ -1922,19 +2112,6 @@
             a.download = `circulab_circuit_${Date.now()}.json`;
             a.click();
             URL.revokeObjectURL(url);
-        }
-
-        function toggleSection(sectionId) {
-            const content = document.getElementById(sectionId + '-content');
-            const btn = event.target;
-            
-            if (content.classList.contains('collapsed')) {
-                content.classList.remove('collapsed');
-                btn.textContent = '−';
-            } else {
-                content.classList.add('collapsed');
-                btn.textContent = '+';
-            }
         }
     </script>
 </body>
